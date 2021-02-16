@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+
+import * as yargs from 'yargs';
+
+import { traitFiles } from './trait';
+import { trimString } from './utils';
+
+const options = yargs
+  .usage('swap-lock-registry -u https://registry.npmjs.com [lock-files...]')
+  .option('u', {
+    alias: 'url',
+    describe: 'The registry url',
+    type: 'string',
+    demandOption: true,
+  })
+  .option('y', {
+    alias: 'yarn',
+    describe: 'Whether the files are Yarn lock files',
+    type: 'boolean',
+    demandOption: false,
+    default: false,
+  })
+  .option('p', {
+    alias: 'parallel',
+    describe: 'Whether the trait the files in parallel.',
+    type: 'boolean',
+    demandOption: false,
+    default: false,
+  }).argv;
+
+traitFiles(options._ as string[], {
+  url: trimString(options.u, '/'),
+  yarn: options.y,
+  parallel: options.p,
+});

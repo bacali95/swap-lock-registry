@@ -1,0 +1,38 @@
+{
+  "name": "swap-lock-registry",
+  "version": "1.0.0",
+  "description": "A CLI tool to swap the registry URL in the lock file without having to remove it",
+  "main": "bin/index.js",
+  "repository": "https://github.com/bacali95/swap-lock-registry",
+  "author": "Nasreddine Bac Ali",
+  "license": "MIT",
+  "private": false,
+  "bin": {
+    "swap-lock-registry": "bin/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/index.ts",
+    "start:prod": "node ."
+  },
+  "dependencies": {
+    "@yarnpkg/lockfile": "^1.1.0",
+    "chalk": "^4.1.0",
+    "got": "^11.8.1",
+    "ssri": "^8.0.1",
+    "yargs": "^16.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.19.15",
+    "@types/ssri": "^7.1.0",
+    "@types/yargs": "^15.0.12",
+    "@types/yarnpkg__lockfile": "^1.1.4",
+    "@typescript-eslint/eslint-plugin": "^4.14.0",
+    "@typescript-eslint/parser": "^4.14.0",
+    "eslint": "^7.18.0",
+    "eslint-config-prettier": "7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "^2.2.1",
+    "typescript": "^4.1.5"
+  }
+}
