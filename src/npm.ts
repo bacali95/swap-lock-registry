@@ -15,7 +15,7 @@ export async function traitNpmLockFile(
         .filter((pkg) => !!pkg)
         .map(async (pkg) => {
           await traitPackage(
-            lockFileObject,
+            lockFileObject.packages,
             pkg,
             lockFile,
             url,
@@ -40,6 +40,7 @@ export async function traitNpmLockFile(
     logger.clearLine();
     logger.success(lockFile, 'done');
   } catch (error) {
+    console.log(error);
     throw new Error(
       'Error while fetching packages metadata, please check the registry url',
     );
