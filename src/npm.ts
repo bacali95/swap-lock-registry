@@ -25,7 +25,12 @@ export async function traitNpmLockFile(
         }),
     );
 
-    await processDependencies(lockFile, url, lockFileObject.dependencies);
+    await processDependencies(
+      lockFile,
+      url,
+      ignore,
+      lockFileObject.dependencies,
+    );
 
     await fs.writeFile(
       lockFile,
