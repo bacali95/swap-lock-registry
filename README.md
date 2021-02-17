@@ -26,7 +26,7 @@ Options:
       --help      Show help                                                                      [boolean]
       --version   Show version number                                                            [boolean]
   -u, --url       The registry url                                                     [string] [required]
-  -i, --ignore    List of package name patterns to ignore, ex: @types/*,lodash*    [string] [default: ""]
+  -i, --ignore    List of package name patterns to ignore, ex: @types/*,lodash*     [string] [default: ""]
   -y, --yarn      Whether the files are Yarn lock files                         [boolean] [default: false]
   -p, --parallel  Whether the trait the files in parallel.                      [boolean] [default: false]
 ```
