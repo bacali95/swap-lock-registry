@@ -11,7 +11,7 @@ export async function traitNpmLockFile(
 
   try {
     await Promise.all(
-      Object.keys(lockFileObject.packages)
+      Object.keys(lockFileObject.packages ?? {})
         .filter((pkg) => !!pkg)
         .map(async (pkg) => {
           await traitPackage(
