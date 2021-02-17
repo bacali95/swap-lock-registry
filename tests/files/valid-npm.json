@@ -1,0 +1,27 @@
+{
+  "name": "temp",
+  "version": "1.0.0",
+  "lockfileVersion": 2,
+  "requires": true,
+  "packages": {
+    "": {
+      "version": "1.0.0",
+      "license": "ISC",
+      "dependencies": {
+        "sweet-collections": "^1.0.3"
+      }
+    },
+    "node_modules/sweet-collections": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/sweet-collections/-/sweet-collections-1.0.3.tgz",
+      "integrity": "sha512-0P8qpGQJE32fHDKXSYu6abF+c4zAPvuEJZ3W3tYpkpIbUawbvYZq5PpaXFafWtKb9HgnMG2kxFWgdFdwqXzE8A=="
+    }
+  },
+  "dependencies": {
+    "sweet-collections": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/sweet-collections/-/sweet-collections-1.0.3.tgz",
+      "integrity": "sha512-0P8qpGQJE32fHDKXSYu6abF+c4zAPvuEJZ3W3tYpkpIbUawbvYZq5PpaXFafWtKb9HgnMG2kxFWgdFdwqXzE8A=="
+    }
+  }
+}

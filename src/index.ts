@@ -15,7 +15,7 @@ const options = yargs
   })
   .option('i', {
     alias: 'ignore',
-    describe: 'List of package names patterns to ignore, ex: @types/*,lodash*',
+    describe: 'List of package name patterns to ignore, ex: @types/*,lodash*',
     type: 'string',
     demandOption: false,
     default: '',

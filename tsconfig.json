@@ -9,5 +9,6 @@
     "target": "ES2017",
     "outDir": "./bin",
     "incremental": true
-  }
+  },
+  "exclude": ["tests"]
 }
