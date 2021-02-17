@@ -1,12 +1,11 @@
-import { NPM_REGISTRY_RE, fetchPackageFromRegistry, readFile } from './utils';
-
-import { fromHex } from 'ssri';
+import { readFile, traitPackage } from './utils';
 import { promises as fs } from 'fs';
 import { logger } from './logger';
 
-export async function traitNPMLockFile(
+export async function traitNpmLockFile(
   lockFile: string,
   url: string,
+  ignore: RegExp[],
 ): Promise<void> {
   const lockFileObject = await parseNpmLockFile(lockFile);
 
@@ -15,21 +14,14 @@ export async function traitNPMLockFile(
       Object.keys(lockFileObject.packages)
         .filter((pkg) => !!pkg)
         .map(async (pkg) => {
-          const name = pkg.replace(/^.*node_modules\//g, '');
-          const version = lockFileObject.packages[pkg].version;
-
-          const newPackage = await fetchPackageFromRegistry(url, name, version);
-          let { tarball, shasum, integrity } = newPackage.dist;
-
-          if (!url.match(NPM_REGISTRY_RE) && tarball.match(NPM_REGISTRY_RE)) {
-            tarball = tarball.replace(NPM_REGISTRY_RE, url);
-          }
-
-          lockFileObject.packages[pkg].resolved = tarball;
-          lockFileObject.packages[pkg].integrity =
-            integrity ?? fromHex(shasum, 'sha1').toString();
-
-          logger.progress(lockFile, `${name}@${version}`);
+          await traitPackage(
+            lockFileObject,
+            pkg,
+            lockFile,
+            url,
+            ignore,
+            /^.*node_modules\//g,
+          );
         }),
     );
 
@@ -43,17 +35,16 @@ export async function traitNPMLockFile(
     logger.clearLine();
     logger.success(lockFile, 'done');
   } catch (error) {
-    logger.error(
-      lockFile,
+    throw new Error(
       'Error while fetching packages metadata, please check the registry url',
     );
-    process.exit(-1);
   }
 }
 
-async function processDependencies(
+export async function processDependencies(
   lockFile: string,
   url: string,
+  ignore: RegExp[],
   dependencies?: any,
 ): Promise<void> {
   if (!dependencies) return;
@@ -62,32 +53,23 @@ async function processDependencies(
     Object.keys(dependencies)
       .filter((pkg) => !!pkg)
       .map(async (pkg) => {
-        const version = dependencies[pkg].version;
+        await traitPackage(dependencies, pkg, lockFile, url, ignore);
 
-        const newPackage = await fetchPackageFromRegistry(url, pkg, version);
-        let { tarball, shasum, integrity } = newPackage.dist;
-
-        if (!url.match(NPM_REGISTRY_RE) && tarball.match(NPM_REGISTRY_RE)) {
-          tarball = tarball.replace(NPM_REGISTRY_RE, url);
-        }
-
-        dependencies[pkg].resolved = tarball;
-        dependencies[pkg].integrity =
-          integrity ?? fromHex(shasum, 'sha1').toString();
-
-        logger.progress(lockFile, `${pkg}@${version}`);
-
-        await processDependencies(url, dependencies[pkg].dependencies);
+        await processDependencies(
+          lockFile,
+          url,
+          ignore,
+          dependencies[pkg].dependencies,
+        );
       }),
   );
 }
 
-async function parseNpmLockFile(lockFile: string): Promise<any> {
+export async function parseNpmLockFile(lockFile: string): Promise<any> {
   const lockFileString = await readFile(lockFile);
   try {
     return JSON.parse(lockFileString);
   } catch (error) {
-    logger.error(lockFile, 'Error: could not parse package-lock.json!');
-    process.exit(-1);
+    throw new Error(`Could not parse ${lockFile}!`);
   }
 }

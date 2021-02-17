@@ -2,11 +2,12 @@ import { Manifest, RegistryResponse } from './types';
 
 import { promises as fs } from 'fs';
 import got from 'got';
-import { red } from 'chalk';
+import { fromHex } from 'ssri';
+import { logger } from './logger';
 
 export const NPM_REGISTRY_RE = /https?:\/\/registry\.npmjs\.org/g;
 
-export function trimString(str: string, char: string = ' '): string {
+export function trimString(str: string, char = ' '): string {
   let i = 0;
   let j = str.length - 1;
   while (i < str.length && str[i] === char) i++;
@@ -35,7 +36,34 @@ export async function readFile(path: string): Promise<string> {
   try {
     return await fs.readFile(path, 'utf8');
   } catch (error) {
-    console.error(red(`Error: could not read '${path}'`));
-    process.exit(-1);
+    throw new Error(`Could not read '${path}'!`);
   }
+}
+
+export async function traitPackage(
+  obj: any,
+  pkg: string,
+  lockFile: string,
+  url: string,
+  ignore: RegExp[],
+  nameRegex?: RegExp,
+  tarballWithShaSum = false,
+): Promise<void> {
+  const name = nameRegex ? pkg.replace(nameRegex, '') : pkg;
+  const version = obj[pkg].version;
+
+  if (ignore.some((reg) => name.match(reg))) return;
+
+  const newPackage = await fetchPackageFromRegistry(url, name, version);
+  const { shasum, integrity } = newPackage.dist;
+  let tarball = newPackage.dist.tarball;
+
+  if (!url.match(NPM_REGISTRY_RE) && tarball.match(NPM_REGISTRY_RE)) {
+    tarball = tarball.replace(NPM_REGISTRY_RE, url);
+  }
+
+  obj[pkg].resolved = tarballWithShaSum ? `${tarball}#${shasum}` : tarball;
+  obj[pkg].integrity = integrity ?? fromHex(shasum, 'sha1').toString();
+
+  logger.progress(lockFile, `${name}@${version}`);
 }

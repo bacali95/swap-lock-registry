@@ -1,5 +1,6 @@
 export type TraitOptions = {
   url: string;
+  ignore?: RegExp[];
   yarn?: boolean;
   parallel?: boolean;
 };

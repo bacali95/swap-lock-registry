@@ -13,6 +13,13 @@ const options = yargs
     type: 'string',
     demandOption: true,
   })
+  .option('i', {
+    alias: 'ignore',
+    describe: 'List of package names patterns to ignore, ex: @types/*,lodash*',
+    type: 'string',
+    demandOption: false,
+    default: '',
+  })
   .option('y', {
     alias: 'yarn',
     describe: 'Whether the files are Yarn lock files',
@@ -30,6 +37,9 @@ const options = yargs
 
 traitFiles(options._ as string[], {
   url: trimString(options.u, '/'),
+  ignore: options.i
+    .split(',')
+    .map((str) => new RegExp(`^${str.replace(/\*/g, '.*')}$`, 'g')),
   yarn: options.y,
   parallel: options.p,
 });
