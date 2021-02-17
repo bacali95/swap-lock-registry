@@ -6,6 +6,7 @@ import { fromHex } from 'ssri';
 import { logger } from './logger';
 
 export const NPM_REGISTRY_RE = /https?:\/\/registry\.npmjs\.org/g;
+export const GITHUB_RE = /https?:\/\/(www\.)?github\.com/g;
 
 export function trimString(str: string, char = ' '): string {
   let i = 0;
@@ -52,7 +53,7 @@ export async function traitPackage(
   const name = nameRegex ? pkg.replace(nameRegex, '') : pkg;
   const version = obj[pkg].version;
 
-  if (ignore.some((reg) => name.match(reg))) return;
+  if (pkg.match(GITHUB_RE) || ignore.some((reg) => name.match(reg))) return;
 
   const newPackage = await fetchPackageFromRegistry(url, name, version);
   const { shasum, integrity } = newPackage.dist;
