@@ -20,7 +20,9 @@ export async function traitNpmLockFile(
             lockFile,
             url,
             ignore,
-            /^.*node_modules\//g,
+            pkg.replace(/^.*node_modules\//g, ''),
+            lockFileObject.packages[pkg].from ??
+              lockFileObject.packages[pkg].version,
           );
         }),
     );
@@ -59,7 +61,15 @@ export async function processDependencies(
     Object.keys(dependencies)
       .filter((pkg) => !!pkg)
       .map(async (pkg) => {
-        await traitPackage(dependencies, pkg, lockFile, url, ignore);
+        await traitPackage(
+          dependencies,
+          pkg,
+          lockFile,
+          url,
+          ignore,
+          pkg,
+          dependencies[pkg].from ?? dependencies[pkg].version,
+        );
 
         await processDependencies(
           lockFile,

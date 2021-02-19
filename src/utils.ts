@@ -5,7 +5,13 @@ import got from 'got';
 import { fromHex } from 'ssri';
 import { logger } from './logger';
 
-export const NPM_REGISTRY_RE = /https?:\/\/registry\.npmjs\.org/g;
+const NPM_REGISTRY_RE = /https?:\/\/registry\.npmjs\.org/g;
+const IGNORE_REGEX = [
+  /^https?:\/\/.*/g,
+  /^git.*/g,
+  /^[^\/]+\/[^\/]+(#.*)?/g,
+  /^file:.*/g,
+];
 
 export function trimString(str: string, char = ' '): string {
   let i = 0;
@@ -46,15 +52,15 @@ export async function traitPackage(
   lockFile: string,
   url: string,
   ignore: RegExp[],
-  nameRegex?: RegExp,
+  name: string,
+  source: string,
   tarballWithShaSum = false,
 ): Promise<void> {
-  const name = nameRegex ? pkg.replace(nameRegex, '') : pkg;
-
   if (
-    !(obj[pkg].resolved && obj[pkg].integrity) ||
+    IGNORE_REGEX.some((reg) => source.match(reg)) ||
     ignore.some((reg) => name.match(reg))
   ) {
+    logger.warning(lockFile, `Ignoring ${name}@${source}`);
     return;
   }
 

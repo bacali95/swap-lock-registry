@@ -67,7 +67,6 @@ sweet-collections@^1.0.3:
   describe('traitPackage', () => {
     const url = 'https://registry.yarnpkg.com';
     const lockFile = 'yarn.lock';
-    const nameRegex = /@[^@]*$/g;
     const ignore = [/.*jest.*/g];
 
     it('should trait correctly nest package', async () => {
@@ -79,7 +78,8 @@ sweet-collections@^1.0.3:
         lockFile,
         url,
         [],
-        nameRegex,
+        'jest',
+        '26.6.3',
         true,
       );
 
@@ -106,7 +106,8 @@ sweet-collections@^1.0.3:
         lockFile,
         url,
         ignore,
-        nameRegex,
+        'jest',
+        '26.6.3',
         true,
       );
 
@@ -116,7 +117,8 @@ sweet-collections@^1.0.3:
         lockFile,
         url,
         ignore,
-        nameRegex,
+        'sweet-collections',
+        '^1.0.3',
         true,
       );
 
@@ -129,6 +131,66 @@ sweet-collections@^1.0.3:
             'https://registry.yarnpkg.com/sweet-collections/-/sweet-collections-1.0.3.tgz#838640556f6ab0b9f18a4ccfe0fe9f3384d5e4e4',
           version: '1.0.3',
         },
+      });
+    });
+
+    it('should ignore special cases', async () => {
+      const obj = {
+        'asd@http://asdf.com/asdf.tar.gz': { version: '1.0.0' },
+        'npm@git+ssh://git@github.com:npm/cli.git': { version: '7.5.4' },
+        mocha: { version: 'mochajs/mocha#4727d357ea' },
+        'self@file:.': { version: '1.0.0' },
+      };
+
+      await traitPackage(
+        obj,
+        'asd@http://asdf.com/asdf.tar.gz',
+        lockFile,
+        url,
+        ignore,
+        'asd',
+        'http://asdf.com/asdf.tar.gz',
+        true,
+      );
+
+      await traitPackage(
+        obj,
+        'npm@git+ssh://git@github.com:npm/cli.git',
+        lockFile,
+        url,
+        ignore,
+        'npm',
+        'git+ssh://git@github.com:npm/cli.git',
+        true,
+      );
+
+      await traitPackage(
+        obj,
+        'mocha',
+        lockFile,
+        url,
+        ignore,
+        'mocha',
+        'mochajs/mocha#4727d357ea',
+        true,
+      );
+
+      await traitPackage(
+        obj,
+        'self',
+        lockFile,
+        url,
+        ignore,
+        'self',
+        'file:.',
+        true,
+      );
+
+      expect(obj).toEqual({
+        'asd@http://asdf.com/asdf.tar.gz': { version: '1.0.0' },
+        'npm@git+ssh://git@github.com:npm/cli.git': { version: '7.5.4' },
+        mocha: { version: 'mochajs/mocha#4727d357ea' },
+        'self@file:.': { version: '1.0.0' },
       });
     });
   });

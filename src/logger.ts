@@ -16,6 +16,10 @@ class Logger {
     console.log(blue(`[${context}]`), green(...args));
   }
 
+  warning(context: string, ...args): void {
+    console.log(blue(`[${context}]`), yellow(...args));
+  }
+
   error(context: string, ...args): void {
     console.error(blue(`[${context}]`), red(...args));
   }

@@ -19,7 +19,10 @@ export async function traitYarnLockFile(
           lockFile,
           url,
           ignore,
-          /@[^@]*$/g,
+          pkg.startsWith('@')
+            ? `@${pkg.substr(1).replace(/@[^@]*/g, '')}`
+            : pkg.replace(/@[^@]*/g, ''),
+          pkg.replace(/^@?[^@]*@/g, ''),
           true,
         );
       }),
