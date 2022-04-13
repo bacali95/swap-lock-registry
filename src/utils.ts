@@ -6,12 +6,14 @@ import { fromHex } from 'ssri';
 import { logger } from './logger';
 
 const NPM_REGISTRY_RE = /https?:\/\/registry\.npmjs\.org/g;
+
 const IGNORE_REGEX = [
   /^https?:\/\/.*/g,
   /^git.*/g,
   /^[^\/]+\/[^\/]+(#.*)?/g,
   /^file:.*/g,
 ];
+const RESOLVED_IGNORE_REGEX = [/^git.*/g, /^file:.*/g];
 
 export function trimString(str: string, char = ' '): string {
   let i = 0;
@@ -69,7 +71,8 @@ export async function traitPackage(
   const { url, lockFile, ignore, tarballWithShaSum, additional } = opts;
   const resolved = obj[pkg]?.resolved;
   if (
-    IGNORE_REGEX.some((reg) => resolved?.match(reg) || source.match(reg)) ||
+    IGNORE_REGEX.some((reg) => source.match(reg)) ||
+    RESOLVED_IGNORE_REGEX.some((reg) => resolved?.match(reg)) ||
     ignore.some((reg) => name.match(reg))
   ) {
     logger.warning(lockFile, `Ignoring ${name}@${source}`);

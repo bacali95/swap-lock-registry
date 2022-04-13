@@ -70,7 +70,13 @@ sweet-collections@^1.0.3:
     const ignore = [/.*jest.*/g];
 
     it('should trait correctly nest package', async () => {
-      const obj = { 'jest@26.6.3': { version: '26.6.3' } };
+      const obj = {
+        'jest@26.6.3': {
+          version: '26.6.3',
+          resolved:
+            'https://registry.yarnpkg.com/what-ever',
+        }
+      };
 
       await traitPackage(
         obj,
