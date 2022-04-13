@@ -1,4 +1,4 @@
-import { Manifest, RegistryResponse } from './types';
+import { Manifest, RegistryResponse, TraitOptions } from './types';
 
 import { promises as fs } from 'fs';
 import got from 'got';
@@ -46,24 +46,40 @@ export async function readFile(path: string): Promise<string> {
   }
 }
 
+export interface TraitPackageOptions extends TraitOptions {
+  lockFile: string;
+  tarballWithShaSum?: boolean;
+}
+/**
+ *
+ * @param obj dependencies object
+ * @param pkg "node_modules/@babel/code-frame"
+ * @param name "@babel/code-frame"
+ * @param source package from or version
+ * @param opts
+ * @returns
+ */
 export async function traitPackage(
   obj: any,
   pkg: string,
-  lockFile: string,
-  url: string,
-  ignore: RegExp[],
   name: string,
   source: string,
-  tarballWithShaSum = false,
+  opts: TraitPackageOptions,
 ): Promise<void> {
+  const { url, lockFile, ignore, tarballWithShaSum, additional } = opts;
+  const resolved = obj[pkg]?.resolved;
   if (
-    IGNORE_REGEX.some((reg) => source.match(reg)) ||
+    IGNORE_REGEX.some((reg) => resolved?.match(reg) || source.match(reg)) ||
     ignore.some((reg) => name.match(reg))
   ) {
     logger.warning(lockFile, `Ignoring ${name}@${source}`);
     return;
   }
 
+  // ignore registry is already replaced.
+  if (additional && resolved?.startsWith(url)) {
+    return;
+  }
   const version = obj[pkg].version;
   const newPackage = await fetchPackageFromRegistry(url, name, version);
   const { shasum, integrity } = newPackage.dist;

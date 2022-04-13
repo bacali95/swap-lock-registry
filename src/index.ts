@@ -33,6 +33,13 @@ const options = yargs
     type: 'boolean',
     demandOption: false,
     default: false,
+  })
+  .option('a', {
+    alias: 'additional',
+    describe: 'Only update package which registry not match.',
+    type: 'boolean',
+    demandOption: false,
+    default: false,
   }).argv;
 
 traitFiles(options._ as string[], {
@@ -42,4 +49,5 @@ traitFiles(options._ as string[], {
     .map((str) => new RegExp(`^${str.replace(/\*/g, '.*')}$`, 'g')),
   yarn: options.y,
   parallel: options.p,
+  additional: options.a,
 });

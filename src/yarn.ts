@@ -2,11 +2,11 @@ import { readFile, traitPackage } from './utils';
 import { parse, stringify } from '@yarnpkg/lockfile';
 import { promises as fs } from 'fs';
 import { logger } from './logger';
+import { TraitOptions } from './types';
 
 export async function traitYarnLockFile(
   lockFile: string,
-  url: string,
-  ignore: RegExp[],
+  opts: TraitOptions,
 ): Promise<void> {
   const lockFileObject = await parseYarnLockFile(lockFile);
 
@@ -16,14 +16,15 @@ export async function traitYarnLockFile(
         return traitPackage(
           lockFileObject,
           pkg,
-          lockFile,
-          url,
-          ignore,
           pkg.startsWith('@')
             ? `@${pkg.substr(1).replace(/@[^@]*/g, '')}`
             : pkg.replace(/@[^@]*/g, ''),
           pkg.replace(/^@?[^@]*@/g, ''),
-          true,
+          {
+            ...opts,
+            lockFile,
+            tarballWithShaSum: true,
+          },
         );
       }),
     );

@@ -12,8 +12,7 @@ export async function traitFiles(
       lockFiles.map((file) =>
         (options.yarn ? traitYarnLockFile : traitNpmLockFile)(
           file,
-          options.url,
-          options.ignore,
+          options,
         ).catch((error) => logger.error(file, error.message)),
       ),
     );
@@ -21,8 +20,7 @@ export async function traitFiles(
     for (const file of lockFiles) {
       await (options.yarn ? traitYarnLockFile : traitNpmLockFile)(
         file,
-        options.url,
-        options.ignore,
+        options,
       ).catch((error) => logger.error(file, error.message));
     }
   }
