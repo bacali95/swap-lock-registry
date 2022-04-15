@@ -1,11 +1,11 @@
-import { readFile, traitPackage } from './utils';
+import { readFile, traitPackage, TraitPackageOptions } from './utils';
 import { promises as fs } from 'fs';
 import { logger } from './logger';
+import { TraitOptions } from './types';
 
 export async function traitNpmLockFile(
   lockFile: string,
-  url: string,
-  ignore: RegExp[],
+  opts: TraitOptions,
 ): Promise<void> {
   const lockFileObject = await parseNpmLockFile(lockFile);
 
@@ -17,22 +17,21 @@ export async function traitNpmLockFile(
           await traitPackage(
             lockFileObject.packages,
             pkg,
-            lockFile,
-            url,
-            ignore,
             pkg.replace(/^.*node_modules\//g, ''),
             lockFileObject.packages[pkg].from ??
               lockFileObject.packages[pkg].version,
+            {
+              ...opts,
+              lockFile,
+            },
           );
         }),
     );
 
-    await processDependencies(
+    await processDependencies(lockFileObject.dependencies, {
+      ...opts,
       lockFile,
-      url,
-      ignore,
-      lockFileObject.dependencies,
-    );
+    });
 
     await fs.writeFile(
       lockFile,
@@ -50,10 +49,8 @@ export async function traitNpmLockFile(
 }
 
 export async function processDependencies(
-  lockFile: string,
-  url: string,
-  ignore: RegExp[],
-  dependencies?: any,
+  dependencies: any,
+  opts: TraitPackageOptions,
 ): Promise<void> {
   if (!dependencies) return;
 
@@ -64,19 +61,12 @@ export async function processDependencies(
         await traitPackage(
           dependencies,
           pkg,
-          lockFile,
-          url,
-          ignore,
           pkg,
           dependencies[pkg].from ?? dependencies[pkg].version,
+          opts,
         );
 
-        await processDependencies(
-          lockFile,
-          url,
-          ignore,
-          dependencies[pkg].dependencies,
-        );
+        await processDependencies(dependencies[pkg].dependencies, opts);
       }),
   );
 }

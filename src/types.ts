@@ -3,6 +3,7 @@ export type TraitOptions = {
   ignore?: RegExp[];
   yarn?: boolean;
   parallel?: boolean;
+  ignoreReplaced?: boolean;
 };
 
 export type Manifest = {

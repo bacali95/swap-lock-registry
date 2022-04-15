@@ -70,17 +70,25 @@ sweet-collections@^1.0.3:
     const ignore = [/.*jest.*/g];
 
     it('should trait correctly nest package', async () => {
-      const obj = { 'jest@26.6.3': { version: '26.6.3' } };
+      const obj = {
+        'jest@26.6.3': {
+          version: '26.6.3',
+          resolved:
+            'https://registry.yarnpkg.com/what-ever',
+        }
+      };
 
       await traitPackage(
         obj,
         'jest@26.6.3',
-        lockFile,
-        url,
-        [],
         'jest',
         '26.6.3',
-        true,
+        {
+          lockFile,
+          url,
+          ignore: [],
+          tarballWithShaSum: true
+        }
       );
 
       expect(obj).toEqual({
@@ -103,23 +111,27 @@ sweet-collections@^1.0.3:
       await traitPackage(
         obj,
         'jest@26.6.3',
-        lockFile,
-        url,
-        ignore,
         'jest',
         '26.6.3',
-        true,
+        {
+          lockFile,
+          url,
+          ignore,
+          tarballWithShaSum: true
+        }
       );
 
       await traitPackage(
         obj,
         'sweet-collections@^1.0.3',
-        lockFile,
-        url,
-        ignore,
         'sweet-collections',
         '^1.0.3',
-        true,
+        {
+          lockFile,
+          url,
+          ignore,
+          tarballWithShaSum: true
+        }
       );
 
       expect(obj).toEqual({
@@ -145,45 +157,53 @@ sweet-collections@^1.0.3:
       await traitPackage(
         obj,
         'asd@http://asdf.com/asdf.tar.gz',
-        lockFile,
-        url,
-        ignore,
         'asd',
         'http://asdf.com/asdf.tar.gz',
-        true,
+        {
+          lockFile,
+          url,
+          ignore,
+          tarballWithShaSum: true
+        }
       );
 
       await traitPackage(
         obj,
         'npm@git+ssh://git@github.com:npm/cli.git',
-        lockFile,
-        url,
-        ignore,
         'npm',
         'git+ssh://git@github.com:npm/cli.git',
-        true,
+        {
+          lockFile,
+          url,
+          ignore,
+          tarballWithShaSum: true
+        }
       );
 
       await traitPackage(
         obj,
         'mocha',
-        lockFile,
-        url,
-        ignore,
         'mocha',
         'mochajs/mocha#4727d357ea',
-        true,
+        {
+          lockFile,
+          url,
+          ignore,
+          tarballWithShaSum: true
+        }
       );
 
       await traitPackage(
         obj,
         'self',
-        lockFile,
-        url,
-        ignore,
         'self',
         'file:.',
-        true,
+        {
+          lockFile,
+          url,
+          ignore,
+          tarballWithShaSum: true
+        }
       );
 
       expect(obj).toEqual({
@@ -191,6 +211,35 @@ sweet-collections@^1.0.3:
         'npm@git+ssh://git@github.com:npm/cli.git': { version: '7.5.4' },
         mocha: { version: 'mochajs/mocha#4727d357ea' },
         'self@file:.': { version: '1.0.0' },
+      });
+    });
+
+    it('should ignore already replaced pkg', async () => {
+      const obj = {
+        'jest@26.6.3': {
+          version: '26.6.3',
+          "resolved": "https://registry.yarnpkg.com/no-matter-what-is"
+        }
+      };
+
+      await traitPackage(
+        obj,
+        'jest@26.6.3',
+        'jest',
+        '26.6.3',
+        {
+          lockFile,
+          url,
+          ignore: [],
+          ignoreReplaced: true
+        }
+      );
+
+      expect(obj).toEqual({
+        'jest@26.6.3': {
+          version: '26.6.3',
+          "resolved": "https://registry.yarnpkg.com/no-matter-what-is"
+        }
       });
     });
   });
