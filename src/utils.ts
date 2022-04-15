@@ -48,10 +48,11 @@ export async function readFile(path: string): Promise<string> {
   }
 }
 
-export interface TraitPackageOptions extends TraitOptions {
+export type TraitPackageOptions = TraitOptions & {
   lockFile: string;
   tarballWithShaSum?: boolean;
-}
+};
+
 /**
  *
  * @param obj dependencies object
