@@ -68,7 +68,7 @@ export async function traitPackage(
   source: string,
   opts: TraitPackageOptions,
 ): Promise<void> {
-  const { url, lockFile, ignore, tarballWithShaSum, additional } = opts;
+  const { url, lockFile, ignore, tarballWithShaSum, ignoreReplaced } = opts;
   const resolved = obj[pkg]?.resolved;
   if (
     IGNORE_REGEX.some((reg) => source.match(reg)) ||
@@ -80,7 +80,7 @@ export async function traitPackage(
   }
 
   // ignore registry is already replaced.
-  if (additional && resolved?.startsWith(url)) {
+  if (ignoreReplaced && resolved?.startsWith(url)) {
     return;
   }
   const version = obj[pkg].version;

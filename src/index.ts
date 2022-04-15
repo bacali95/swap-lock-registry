@@ -35,8 +35,8 @@ const options = yargs
     default: false,
   })
   .option('a', {
-    alias: 'additional',
-    describe: 'Only update package which registry not match.',
+    alias: 'all',
+    describe: 'Update all packages even registry is already replaced.',
     type: 'boolean',
     demandOption: false,
     default: false,
@@ -49,5 +49,5 @@ traitFiles(options._ as string[], {
     .map((str) => new RegExp(`^${str.replace(/\*/g, '.*')}$`, 'g')),
   yarn: options.y,
   parallel: options.p,
-  additional: options.a,
+  ignoreReplaced: !options.a,
 });

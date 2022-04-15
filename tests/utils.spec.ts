@@ -231,7 +231,7 @@ sweet-collections@^1.0.3:
           lockFile,
           url,
           ignore: [],
-          additional: true
+          ignoreReplaced: true
         }
       );
 
