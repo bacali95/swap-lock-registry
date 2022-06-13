@@ -4,7 +4,9 @@
 
 A CLI tool to swap the registry URL in the lock file without having to remove it.
 
-Ex: `swap-lock-registry --yarn --parallel --url https://registry.npmjs.com server/yarn.lock client/yarn.lock`
+```shell
+swap-lock-registry --yarn --parallel --url https://registry.npmjs.com server/yarn.lock client/yarn.lock
+```
 
 ## Install
 
